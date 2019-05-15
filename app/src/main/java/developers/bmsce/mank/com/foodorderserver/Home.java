@@ -24,27 +24,31 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
-import java.net.URL;
 import java.util.UUID;
 
 import developers.bmsce.mank.com.foodorderserver.Common.Common;
 import developers.bmsce.mank.com.foodorderserver.Interface.ItemClickListener;
 import developers.bmsce.mank.com.foodorderserver.Models.Category;
+import developers.bmsce.mank.com.foodorderserver.Models.Token;
 import developers.bmsce.mank.com.foodorderserver.ViewHolder.MenuViewHolder;
 
 public class Home extends AppCompatActivity
@@ -124,9 +128,28 @@ public class Home extends AppCompatActivity
         layoutManager = new LinearLayoutManager(this);
         recycler_menu.setLayoutManager(layoutManager);
 
+     //   recycler_menu.setLayoutManager(new GridLayoutManager(this,2));
+
         loadMenu();
 
+        upadteoken(FirebaseInstanceId.getInstance().getToken());
+
+//        Log.d("fs", "serviswe starts");
+//        Intent intent = new Intent(Home.this, ListenOrder.class);
+//        startService(intent);
+
+
     }
+
+    private void upadteoken(String token) {
+
+        FirebaseDatabase db= FirebaseDatabase.getInstance();
+        DatabaseReference tokens= db.getReference("Tokens");
+        Token data=new Token(token,true);//client side
+        tokens.child(Common.currentUser.getPhone()).setValue(data);
+
+    }
+
 
     private void showDialog() {
 
@@ -346,6 +369,11 @@ public class Home extends AppCompatActivity
         } else if (id == R.id.nav_cart) {
 
         } else if (id == R.id.nav_orders) {
+            Intent intent = new Intent(Home.this,OrderStatus.class);
+            startActivity(intent);
+
+
+
 
         } else if (id == R.id.nav_signout) {
 
@@ -355,7 +383,6 @@ public class Home extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
@@ -375,6 +402,28 @@ public class Home extends AppCompatActivity
     }
 
     private void deleteCategory(String key) {
+
+        DatabaseReference foods = database.getReference("Foods");
+        Query foodInCategory = foods.orderByChild("menuId").equalTo(key);
+        foodInCategory.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+
+                    postSnapshot.getRef().removeValue();
+
+
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         category.child(key).removeValue();
         Toast.makeText(Home.this,"Item deleted RJ",Toast.LENGTH_SHORT).show();
@@ -490,4 +539,6 @@ public class Home extends AppCompatActivity
                     });
         }
     }
+
+
 }

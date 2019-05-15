@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FoodList">
+    tools:context=".FoodList"
+    android:id="@+id/root_layout">
 
 
     <android.support.v7.widget.RecyclerView
@@ -24,7 +25,7 @@
         android:layout_marginBottom="19dp"
         android:layout_marginEnd="40dp"
         android:backgroundTint="@android:color/white"
-        app:srcCompat="@drawable/ic_shopping_cart_black_24dp"
+        app:srcCompat="@drawable/ic_add_shopping_cart_black_24dp"
         tools:layout_editor_absoluteX="328dp"
         tools:layout_editor_absoluteY="511dp" />
 

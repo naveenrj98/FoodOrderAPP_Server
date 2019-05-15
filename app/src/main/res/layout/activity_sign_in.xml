@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/common_open_on_phone"
-            android:text="8073141525"/>
+            android:text="123"/>
 
         <EditText
             android:id="@+id/et_password"
